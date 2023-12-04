@@ -300,10 +300,10 @@ class EnginePsi4(QMEngine):
         if self.extra_constraints is not None:
             raise RuntimeError('extra constraints not supported in Psi4 native optimizations')
         # add the optking command
-        self.optkingStr = '\nset optking {\n  fixed_dihedral = ("\n'
+        self.optkingStr = '\nset optking {\n  ranged_dihedral = ("\n'
         for d1, d2, d3, d4, v in self.dihedral_idx_values:
             # Optking use atom index starting from 1
-            self.optkingStr += '        %d  %d  %d  %d  %f\n' % (d1+1, d2+1, d3+1, d4+1, v)
+            self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, v, v)
         self.optkingStr += '  ")\n}\n'
         # write input file
         self.write_input('input.dat')
