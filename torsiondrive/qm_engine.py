@@ -143,7 +143,7 @@ class QMEngine(object):
         # lie in parallel planes.
         v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
         # Use the relationship between cos and dot product to find the desired angle.
-        return np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
+        return -np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
 
 
     def closest_periodic_angle(self, A, B):
@@ -328,7 +328,9 @@ class EnginePsi4(QMEngine):
         self.optkingStr = '\nset optking {\n  ranged_dihedral = ("\n'
         for d1, d2, d3, d4, v in self.dihedral_idx_values:
             current_v = self.compute_dihedral(d1, d2, d3, d4)
+            print(f'Current Dihedral is {current_v}')
             target_v = self.closest_periodic_angle(v, current_v)
+            print(f'Fixed Dihedral is {target_v}')
             # Optking use atom index starting from 1
             self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, target_v, target_v)
         self.optkingStr += '  ")\n}\n'
