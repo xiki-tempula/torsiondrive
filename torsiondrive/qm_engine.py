@@ -127,10 +127,10 @@ class QMEngine(object):
         return finished_path_set
 
     def compute_dihedral(self, d1, d2, d3, d4):
-        v0 = self.M.xyzs[d1]
-        v1 = self.M.xyzs[d2]
-        v2 = self.M.xyzs[d3]
-        v3 = self.M.xyzs[d4]
+        v0 = self.M.xyzs[0][d1]
+        v1 = self.M.xyzs[0][d2]
+        v2 = self.M.xyzs[0][d3]
+        v3 = self.M.xyzs[0][d4]
 
         # Compute vectors
         a = v1 - v0
