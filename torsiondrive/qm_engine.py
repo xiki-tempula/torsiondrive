@@ -143,7 +143,7 @@ class QMEngine(object):
         # lie in parallel planes.
         v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
         # Use the relationship between cos and dot product to find the desired angle.
-        return -np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
+        return np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
 
 
     def closest_periodic_angle(self, A, B):
