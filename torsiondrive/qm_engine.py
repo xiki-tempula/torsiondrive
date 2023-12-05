@@ -332,7 +332,7 @@ class EnginePsi4(QMEngine):
         with open(filename) as outfile:
             for line in outfile:
                 line = line.strip()
-                if line.startswith('Final energy is'):
+                if line.startswith('Final energy'):
                     final_energy = float(line.split()[-1])
                 elif line.startswith('Final optimized geometry and variables'):
                     found_opt_result = True
