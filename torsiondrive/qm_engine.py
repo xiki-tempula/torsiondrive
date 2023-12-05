@@ -330,7 +330,7 @@ class EnginePsi4(QMEngine):
             current_v = self.compute_dihedral(d1, d2, d3, d4)
             target_v = self.closest_periodic_angle(v, current_v)
             # Optking use atom index starting from 1
-            self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, v, v)
+            self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, target_v, target_v)
         self.optkingStr += '  ")\n}\n'
         # write input file
         self.write_input('input.dat')
