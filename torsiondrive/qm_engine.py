@@ -126,6 +126,42 @@ class QMEngine(object):
                     finished_path_set.add(taskpath)
         return finished_path_set
 
+    def compute_dihedral(self, d1, d2, d3, d4):
+        v0 = self.M.xyzs[d1]
+        v1 = self.M.xyzs[d2]
+        v2 = self.M.xyzs[d3]
+        v3 = self.M.xyzs[d4]
+
+        # Compute vectors
+        a = v1 - v0
+        b = v2 - v1
+        c = v3 - v2
+
+        # Compute cross products
+        cross1 = np.cross(a, b)
+        cross2 = np.cross(b, c)
+
+        # Compute torsion angle
+        torsion_angle_rad = np.arctan2(np.linalg.norm(cross2) * np.dot(cross1, c), np.dot(cross1, np.cross(a, b)))
+
+        # Convert to degrees
+        torsion_angle_deg = np.degrees(torsion_angle_rad)
+
+        return torsion_angle_deg
+
+    def find_closest_periodic_angle(self, A, B):
+        # Ensure both angles are within [0, 360) range
+        A = A % 360
+        B = B % 360
+
+        # Calculate the difference between A and B
+        diff = (B - A + 180) % 360 - 180
+
+        # Adjust A by the difference to get the closest periodic angle
+        closest_periodic_A = (A + diff) % 360
+
+        return closest_periodic_A
+
     # These functions should be defined in the subclasses
     def optimize_native(self):
         raise NotImplementedError
@@ -302,8 +338,8 @@ class EnginePsi4(QMEngine):
         # add the optking command
         self.optkingStr = '\nset optking {\n  ranged_dihedral = ("\n'
         for d1, d2, d3, d4, v in self.dihedral_idx_values:
-            if v == -165:
-                v = -165+360
+            current_v = self.compute_dihedral(d1, d2, d3, d4)
+            target_v = self.find_closest_periodic_angle(current_v, v)
             # Optking use atom index starting from 1
             self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, v, v)
         self.optkingStr += '  ")\n}\n'
