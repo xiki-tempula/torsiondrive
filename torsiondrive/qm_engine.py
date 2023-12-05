@@ -302,6 +302,8 @@ class EnginePsi4(QMEngine):
         # add the optking command
         self.optkingStr = '\nset optking {\n  ranged_dihedral = ("\n'
         for d1, d2, d3, d4, v in self.dihedral_idx_values:
+            if v == -165:
+                v = -165+360
             # Optking use atom index starting from 1
             self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, v, v)
         self.optkingStr += '  ")\n}\n'
@@ -332,7 +334,7 @@ class EnginePsi4(QMEngine):
         with open(filename) as outfile:
             for line in outfile:
                 line = line.strip()
-                if 'Final energy' in line:
+                if 'Final Energy' in line:
                     final_energy = float(line.split()[-1])
                 elif line.startswith('Final optimized geometry and variables'):
                     found_opt_result = True
