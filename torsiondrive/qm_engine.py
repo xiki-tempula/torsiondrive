@@ -149,18 +149,10 @@ class QMEngine(object):
 
         return torsion_angle_deg
 
-    def find_closest_periodic_angle(self, A, B):
-        # Ensure both angles are within [0, 360) range
-        A = A % 360
-        B = B % 360
-
-        # Calculate the difference between A and B
-        diff = (B - A + 180) % 360 - 180
-
-        # Adjust A by the difference to get the closest periodic angle
-        closest_periodic_A = (A + diff) % 360
-
-        return closest_periodic_A
+    def closest_periodic_angle(self, A, B):
+        A_list = [A-360, A, A+360]
+        diff = np.abs(np.array(A_list)-B)
+        return A_list[np.argmin(diff)]
 
     # These functions should be defined in the subclasses
     def optimize_native(self):
@@ -339,7 +331,7 @@ class EnginePsi4(QMEngine):
         self.optkingStr = '\nset optking {\n  ranged_dihedral = ("\n'
         for d1, d2, d3, d4, v in self.dihedral_idx_values:
             current_v = self.compute_dihedral(d1, d2, d3, d4)
-            target_v = self.find_closest_periodic_angle(current_v, v)
+            target_v = self.closest_periodic_angle(v, current_v)
             # Optking use atom index starting from 1
             self.optkingStr += '        %d  %d  %d  %d  %f %f\n' % (d1+1, d2+1, d3+1, d4+1, v, v)
         self.optkingStr += '  ")\n}\n'
