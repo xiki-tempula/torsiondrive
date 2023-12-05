@@ -132,22 +132,19 @@ class QMEngine(object):
         v2 = self.M.xyzs[0][d3]
         v3 = self.M.xyzs[0][d4]
 
-        # Compute vectors
-        a = v1 - v0
-        b = v2 - v1
-        c = v3 - v2
+        p = np.vstack((v0,v1,v2,v3))
 
-        # Compute cross products
-        cross1 = np.cross(a, b)
-        cross2 = np.cross(b, c)
+        # Calculate vectors between points, b1, b2, and b3 in the diagram
+        b = p[:-1] - p[1:]
+        # "Flip" the first vector so that eclipsing vectors have dihedral=0
+        b[0] *= -1
+        # Use dot product to find the components of b1 and b3 that are not
+        # perpendicular to b2. Subtract those components. The resulting vectors
+        # lie in parallel planes.
+        v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
+        # Use the relationship between cos and dot product to find the desired angle.
+        return np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
 
-        # Compute torsion angle
-        torsion_angle_rad = np.arctan2(np.linalg.norm(cross2) * np.dot(cross1, c), np.dot(cross1, np.cross(a, b)))
-
-        # Convert to degrees
-        torsion_angle_deg = np.degrees(torsion_angle_rad)
-
-        return torsion_angle_deg
 
     def closest_periodic_angle(self, A, B):
         A_list = [A-360, A, A+360]
