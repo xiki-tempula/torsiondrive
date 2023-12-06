@@ -133,19 +133,16 @@ class QMEngine(object):
         v3 = self.M.xyzs[0][d4]
 
         p = np.vstack((v0,v1,v2,v3))
-        print(len(self.M.xyzs))
-        print(p)
-
-        # Calculate vectors between points, b1, b2, and b3 in the diagram
         b = p[:-1] - p[1:]
-        # "Flip" the first vector so that eclipsing vectors have dihedral=0
         b[0] *= -1
-        # Use dot product to find the components of b1 and b3 that are not
-        # perpendicular to b2. Subtract those components. The resulting vectors
-        # lie in parallel planes.
         v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
-        # Use the relationship between cos and dot product to find the desired angle.
-        return np.degrees(np.arccos( v[0].dot(v[1])/(np.linalg.norm(v[0]) * np.linalg.norm(v[1]))))
+        # Normalize vectors
+        v /= np.sqrt(np.einsum('...i,...i', v, v)).reshape(-1,1)
+        b1 = b[1] / np.linalg.norm(b[1])
+        x = np.dot(v[0], v[1])
+        m = np.cross(v[0], b1)
+        y = np.dot(m, v[1])
+        return np.degrees(np.arctan2( y, x ))
 
 
     def closest_periodic_angle(self, A, B):
