@@ -133,6 +133,8 @@ class QMEngine(object):
         v3 = self.M.xyzs[0][d4]
 
         p = np.vstack((v0,v1,v2,v3))
+        print(len(self.M.xyzs))
+        print(p)
 
         # Calculate vectors between points, b1, b2, and b3 in the diagram
         b = p[:-1] - p[1:]
